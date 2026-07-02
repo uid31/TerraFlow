@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int             @id @default(autoincrement())
+  username  String          @unique
+  password  String // bcrypt hash, never store plaintext
+  soilType  String? // currently selected soil ("Sandy" | "Clay" | "Loamy")
+  createdAt DateTime        @default(now())
+  readings  SensorReading[]
+}
+
+model SoilProfile {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  icon        String
+  description String
+}
+
+model SensorReading {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  moisture    Int // 0-100 %
+  temperature Int // degrees C
+  waterLevel  Int // 0-100 %
+  createdAt   DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
