@@ -4,9 +4,8 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 
-export async function selectSoilAction(formData: FormData) {
+export async function selectSoilAction(soilType: string) {
   const user = await requireUser();
-  const soilType = formData.get("soilType") as string;
 
   const profile = await prisma.soilProfile.findUnique({ where: { name: soilType } });
   if (!profile) return;
@@ -17,4 +16,5 @@ export async function selectSoilAction(formData: FormData) {
   });
 
   revalidatePath("/selection");
+  revalidatePath("/dashboard");
 }
